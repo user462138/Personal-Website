@@ -1,0 +1,17 @@
+name = "portfolio-ask-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Sites allowed to call this API, comma separated.
+ALLOWED_ORIGINS = "https://yazandukhan.com,https://www.yazandukhan.com,https://user462138.github.io,http://localhost:8000"
+
+# Each visitor IP gets at most 10 questions per minute.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }
+
+# The Anthropic API key is a secret, never stored here:
+#   npx wrangler secret put ANTHROPIC_API_KEY

@@ -78,6 +78,7 @@ h2{font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercas
 .chip:hover{color:var(--accent);border-color:var(--accent)}
 .answer{font-size:.98rem;min-height:1.6em}
 .answer .q{color:var(--muted);font-size:.88rem;display:block;margin-bottom:4px}
+.ai-note{font-size:.72rem}
 
 /* Hero twist: a living dot field behind the intro, and a rotating phrase */
 .hero{position:relative;padding-block:40px 8px;isolation:isolate}
@@ -231,6 +232,7 @@ footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);display
       <button type="submit">Ask</button>
     </form>
     <p class="answer" id="answer" aria-live="polite"></p>
+    <p class="ai-note mono" id="ai-note" hidden>Answers are written by AI from my resume and can be wrong.</p>
   </section>
 
   <dialog id="resume" aria-labelledby="resume-title">
@@ -251,6 +253,10 @@ footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);display
 
 <script>
 (function(){
+  /* URL of the deployed ask-api Worker, e.g. "https://portfolio-ask-api.<your-subdomain>.workers.dev/ask".
+     Leave empty to use only the built-in keyword answers below. */
+  var ASK_API="";
+  var history=[];
   var KB=[
     {k:["numble","internship","intern","event"],a:"At Numble I built a full-stack event management app: a .NET 8 API, a Vue 3 front end, sign-in with roles through Azure AD B2C, notifications through Azure Service Bus, and CI/CD in Azure DevOps."},
     {k:["quote","microtron","erp","sales"],a:"QUOTE+ is an internal tool for Microtron's sales team. It turns plain ERP quotes into branded proposals, with templates, approval steps and single sign-on. Built with C#, .NET and React."},
@@ -304,17 +310,43 @@ footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);display
   }
   function norm(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");}
   function find(q){var n=norm(q),best=null,score=0;KB.forEach(function(e){var s=0;e.k.forEach(function(k){if(n.indexOf(norm(k))>-1)s+=k.length;});if(s>score){score=s;best=e;}});return best;}
+  /* Built-in keyword answers: used when the AI API is not configured or not reachable. */
+  function typeLocal(q,node,caret,my){
+    var e=find(q),txt=e?e.a:"I don't have an answer for that here. Book a quick call above and ask me directly.";
+    if(reduce){node.textContent=txt;caret.remove();return;}
+    var i=0;(function step(){if(my!==typing)return;i=Math.min(txt.length,i+3);node.textContent=txt.slice(0,i);if(i<txt.length)setTimeout(step,16);else setTimeout(function(){caret.remove();},900);})();
+  }
+  /* AI answers, streamed from the ask-api Worker. */
+  function askAI(q,node,caret,my){
+    var ctl=window.AbortController?new AbortController():null,got="",timer=setTimeout(function(){if(ctl&&!got)ctl.abort();},20000);
+    function fail(){clearTimeout(timer);if(my===typing&&!got)typeLocal(q,node,caret,my);else caret.remove();}
+    fetch(ASK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,history:history}),signal:ctl&&ctl.signal})
+      .then(function(res){
+        if(!res.ok||!res.body)return fail();
+        var reader=res.body.getReader(),dec=new TextDecoder();
+        return (function pump(){return reader.read().then(function(r){
+          if(my!==typing){reader.cancel();return;}
+          if(r.done){
+            clearTimeout(timer);
+            if(!got.trim())return fail();
+            history.push({role:"user",content:q},{role:"assistant",content:got});history=history.slice(-6);
+            setTimeout(function(){caret.remove();},600);return;
+          }
+          got+=dec.decode(r.value,{stream:true});node.textContent=got;return pump();
+        });})();
+      })
+      .catch(fail);
+  }
   function ask(q){
     q=q.trim();if(!q)return;
-    var e=find(q);
     out.textContent="";
     var qs=document.createElement("span");qs.className="q";qs.textContent=q;out.appendChild(qs);
-    var txt=e?e.a:"I don't have an answer for that here. Book a quick call above and ask me directly.";
     var node=document.createTextNode("");out.appendChild(node);
-    if(reduce){node.textContent=txt;return;}
     var caret=document.createElement("span");caret.className="caret";out.appendChild(caret);
-    var i=0,my=++typing;(function step(){if(my!==typing)return;i=Math.min(txt.length,i+3);node.textContent=txt.slice(0,i);if(i<txt.length)setTimeout(step,16);else setTimeout(function(){caret.remove();},900);})();
+    var my=++typing;
+    if(ASK_API&&window.fetch&&window.TextDecoder)askAI(q,node,caret,my);else typeLocal(q,node,caret,my);
   }
+  if(ASK_API){document.getElementById("ai-note").hidden=false;input.placeholder="Ask anything about my work";}
   document.getElementById("ask-form").addEventListener("submit",function(ev){ev.preventDefault();ask(input.value);input.value="";});
   document.getElementById("chips").addEventListener("click",function(ev){var b=ev.target.closest(".chip");if(b)ask(b.textContent);});
 
