@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Yazan Dukhan · Software Engineer</title>
+<meta name="description" content="Yazan Dukhan, software engineer building software and AI that helps people explore more.">
+<meta property="og:title" content="Yazan Dukhan · Software Engineer">
+<meta property="og:description" content="Software engineer building software and AI that helps people explore more.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232F5D50'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='15' font-weight='600' fill='white' text-anchor='middle'%3EYD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: one quiet column, like a well-kept notebook page. Dates sit in a narrow left margin. Light only, by choice. */
+:root{
+  --bg:#FAFAF8; --surface:#FFFFFF; --ink:#1E2023; --muted:#6B7078; --line:#E6E6E1; --accent:#2F5D50; --accent-soft:#EAF1EE;
+  --f-body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 var(--f-body);overflow-x:clip}
+img{max-width:100%}
+.page{max-width:680px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:72px 48px}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-weight:600;margin:0;text-wrap:balance;line-height:1.25}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+
+header{display:flex;flex-direction:column;gap:14px}
+h1{font-size:1.6rem}
+header p{max-width:56ch}
+.links{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:4px;font-size:.95rem}
+
+section{margin-top:72px;display:flex;flex-direction:column;gap:24px}
+h2{font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.entry{display:grid;grid-template-columns:120px 1fr;gap:20px}
+.entry>*{min-width:0}
+.entry h3{font-size:1.05rem}
+.entry .where{color:var(--muted);font-size:.95rem}
+.entry p{margin-top:8px}
+.entry .stack{margin-top:10px;font-family:var(--f-mono);font-size:.76rem;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:36px}
+
+.about p+p{margin-top:14px}
+.edu{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+
+/* Book a call */
+.book{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:20px}
+.book h3{font-size:1.25rem}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.opt b{font-weight:600}
+.opt span{font-size:.92rem;color:var(--muted)}
+.opt i{font-style:normal;font-family:var(--f-mono);font-size:.76rem;color:var(--accent);margin-top:6px}
+.steps{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;color:var(--muted)}
+.alt{font-size:.92rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.alt code{font-family:var(--f-mono);font-size:.82rem;color:var(--ink);user-select:all}
+.copy{border:1px solid var(--line);background:transparent;border-radius:6px;font:500 .8rem var(--f-body);color:var(--ink);padding:3px 9px;cursor:pointer}
+.copy:hover{border-color:var(--accent)}
+
+/* Ask */
+.ask{display:flex;flex-direction:column;gap:12px}
+.ask form{display:flex;gap:8px;border-bottom:1px solid var(--ink);padding-bottom:6px}
+.ask input{flex:1;min-width:0;border:0;background:transparent;font:1rem var(--f-body);color:var(--ink);padding:6px 0}
+.ask input:focus-visible{outline:none}
+.ask form:focus-within{border-color:var(--accent)}
+.ask button[type=submit]{border:0;background:transparent;color:var(--accent);font:600 .95rem var(--f-body);cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;font:.85rem var(--f-body);color:var(--muted);padding:5px 12px;cursor:pointer}
+.chip:hover{color:var(--accent);border-color:var(--accent)}
+.answer{font-size:.98rem;min-height:1.6em}
+.answer .q{color:var(--muted);font-size:.88rem;display:block;margin-bottom:4px}
+
+/* Hero twist: a living dot field behind the intro, and a rotating phrase */
+.hero{position:relative;padding-block:40px 8px;isolation:isolate}
+#field{position:absolute;top:-72px;bottom:-40px;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent);mask-image:linear-gradient(to bottom,#000 55%,transparent)}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 10px;align-self:flex-start}
+.kicker i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(47,93,80,.5);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(47,93,80,0)}100%{box-shadow:0 0 0 0 rgba(47,93,80,0)}}
+.hero h1{font-size:clamp(2.2rem,6vw,3rem);letter-spacing:-.02em;margin-top:6px}
+.tagline{font-size:clamp(1.3rem,3.4vw,1.65rem);line-height:1.35;font-weight:500;max-width:30ch;text-wrap:balance}
+.rot{color:var(--accent);background:linear-gradient(transparent 62%,var(--accent-soft) 62%);display:inline-block;transition:opacity .35s,transform .35s}
+.rot.out{opacity:0;transform:translateY(6px)}
+.sub{color:var(--muted);max-width:56ch}
+.list .entry h3{transition:color .2s}
+.list .entry:hover h3{color:var(--accent)}
+.caret{display:inline-block;width:2px;height:1em;background:var(--accent);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.kicker i,.caret{animation:none}.rot{transition:none}}
+
+/* Resume dialog */
+.resume-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;font:500 .95rem var(--f-body);color:var(--ink);padding:7px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;align-self:flex-start}
+.resume-btn:hover{border-color:var(--accent);color:var(--accent)}
+.resume-btn svg{width:15px;height:15px}
+dialog{border:0;padding:0;border-radius:14px;width:min(860px,calc(100vw - 32px));max-height:calc(100vh - 48px);background:var(--surface);color:var(--ink);box-shadow:0 24px 60px rgba(20,24,28,.22);overflow:hidden}
+dialog[open]{display:flex;flex-direction:column;animation:pop .2s ease-out}
+dialog::backdrop{background:rgba(30,32,35,.45);backdrop-filter:blur(3px)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.d-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.d-head b{font-weight:600}
+.d-actions{display:flex;gap:8px;align-items:center}
+.d-actions a,.d-actions button{border:1px solid var(--line);background:var(--surface);border-radius:8px;font:500 .88rem var(--f-body);color:var(--ink);padding:6px 12px;cursor:pointer;text-decoration:none}
+.d-actions a:hover,.d-actions button:hover{border-color:var(--accent);color:var(--accent)}
+.d-body{overflow:auto;background:var(--bg);padding:20px;flex:1;min-height:0}
+.d-body img{display:block;width:100%;max-width:100%;height:auto;margin:0 auto;background:#fff;box-shadow:0 1px 3px rgba(20,24,28,.12);border-radius:2px}
+@media (prefers-reduced-motion:reduce){dialog[open]{animation:none}}
+
+footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:560px){
+  .page{padding-block:48px 40px}
+  .entry{grid-template-columns:1fr;gap:4px}
+  .options{grid-template-columns:1fr}
+  .book{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.opt{transition:none}}
+</style>
+</head>
+<body>
+
+<main class="page">
+  <header class="hero">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <span class="kicker"><i></i>Software engineer · AI</span>
+    <h1>Yazan Dukhan</h1>
+    <p class="tagline">I build software and apply AI so people can <span class="rot" id="rot">explore more</span>.</p>
+    <p class="sub">I design and build software, web applications, business tools and AI-powered features end to end, from the first idea to production. My focus is software that is reliable, secure and easy for people to use.</p>
+    <nav class="links" aria-label="Sections">
+      <a href="#work">Work</a><a href="#call">Book a call</a><a href="https://github.com/user462138" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+    <button type="button" class="resume-btn" data-open-resume><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 1.5h5.5L12.5 4.5v10h-8.5z"/><path d="M9.5 1.5v3h3M6.5 8h4M6.5 10.5h4"/></svg>View resume</button>
+  </header>
+
+  <section id="work" aria-labelledby="work-h">
+    <h2 id="work-h">Work</h2>
+    <div class="list">
+      <article class="entry">
+        <span class="mono">2025</span>
+        <div>
+          <h3>Event management platform</h3>
+          <span class="where">Internship at Numble</span>
+          <p>A full-stack app for planning events and managing who can do what. I built the .NET 8 API, the Vue 3 front end, sign-in with roles through Azure AD B2C, notifications through Azure Service Bus, and the CI/CD pipelines.</p>
+          <div class="stack">.NET 8 · Vue 3 · SQL Server · Azure · Azure DevOps</div>
+        </div>
+      </article>
+      <article class="entry">
+        <span class="mono">2024</span>
+        <div>
+          <h3>QUOTE+</h3>
+          <span class="where">Project for Microtron</span>
+          <p>An internal tool that helps a sales team turn plain ERP quotes into clear, branded proposals, with templates, approval steps and single sign-on.</p>
+          <div class="stack">C# · .NET · React · TypeScript · SQL Server · Azure AD</div>
+        </div>
+      </article>
+      <article class="entry">
+        <span class="mono">2024</span>
+        <div>
+          <h3>Pokémon app</h3>
+          <span class="where">Personal project</span>
+          <p>A small web game for catching, comparing and battling Pokémon, with a quiz that levels up your current one.</p>
+          <div class="stack">Node.js · Express · MongoDB · Jest</div>
+          <p style="margin-top:10px;font-size:.95rem"><a href="https://tyj.onrender.com/" target="_blank" rel="noopener">Try it ↗</a> &nbsp;·&nbsp; <a href="https://github.com/user462138/TYJ.game" target="_blank" rel="noopener">Code ↗</a></p>
+        </div>
+      </article>
+      <article class="entry">
+        <span class="mono">2024</span>
+        <div>
+          <h3>IT support</h3>
+          <span class="where">Student job at Stad Antwerpen</span>
+          <p>Helped municipal staff with hardware and software problems, and set up new desktops, laptops and printers.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+
+  <section id="certs" aria-labelledby="certs-h">
+    <h2 id="certs-h">Certifications</h2>
+    <article class="entry">
+      <span class="mono">2026</span>
+      <div>
+        <h3>Associate AI Engineer for Developers</h3>
+        <span class="where">DataCamp</span>
+        <p>Building with the OpenAI API, embeddings, LangChain agents, Pinecone, Hugging Face and MCP.</p>
+      </div>
+    </article>
+  </section>
+
+  <section id="call" aria-labelledby="call-h">
+    <h2 id="call-h">Book a call</h2>
+    <div class="book">
+      <div>
+        <h3>Let's talk</h3>
+        <p class="muted" style="margin-top:6px">Pick a time that suits you. No email back and forth, and no preparation needed.</p>
+      </div>
+      <div class="options">
+        <a class="opt" href="https://cal.com/yazandukhan/15min" target="_blank" rel="noopener">
+          <b>Quick intro</b>
+          <span>Say hello, ask about my work or a role.</span>
+          <i>15 min · video call →</i>
+        </a>
+        <a class="opt" href="https://cal.com/yazandukhan/30min" target="_blank" rel="noopener">
+          <b>Talk about a project</b>
+          <span>Walk me through what you'd like to build.</span>
+          <i>30 min · video call →</i>
+        </a>
+      </div>
+      <div class="steps"><span>1. Choose a time</span><span>2. Add your name</span><span>3. Get a calendar invite</span></div>
+      <div class="alt">Prefer writing? <code id="email">yazandukhan@hotmail.com</code><button type="button" class="copy" id="copy">Copy</button><span id="copy-status" aria-live="polite"></span></div>
+    </div>
+  </section>
+
+  <section id="ask" aria-labelledby="ask-h" class="ask">
+    <h2 id="ask-h">Questions</h2>
+    <div class="chips" id="chips" role="group" aria-label="Common questions">
+      <button type="button" class="chip">What stack do you use?</button>
+      <button type="button" class="chip">Are you open to work?</button>
+      <button type="button" class="chip">What did you do at Numble?</button>
+    </div>
+    <form id="ask-form">
+      <label for="ask-input" style="position:absolute;left:-9999px">Your question</label>
+      <input id="ask-input" autocomplete="off" maxlength="200" placeholder="Ask something about my work">
+      <button type="submit">Ask</button>
+    </form>
+    <p class="answer" id="answer" aria-live="polite"></p>
+  </section>
+
+  <dialog id="resume" aria-labelledby="resume-title">
+    <div class="d-head">
+      <b id="resume-title">Resume</b>
+      <div class="d-actions">
+        <a href="resume/Yazan_Dukhan_Resume.pdf" target="_blank" rel="noopener">Open PDF</a>
+        <button type="button" id="resume-close" aria-label="Close resume">Close</button>
+      </div>
+    </div>
+    <div class="d-body">
+      <img src="resume/page-1.png" width="1360" height="1760" alt="Resume of Yazan Dukhan: education in computer science and architecture, internship at Numble, IT support at Stad Antwerpen, QUOTE+ and Pokémon app projects, and skills." loading="lazy">
+    </div>
+  </dialog>
+
+  <footer class="mono"><span>Yazan Dukhan</span><span>Software · AI</span></footer>
+</main>
+
+<script>
+(function(){
+  var KB=[
+    {k:["numble","internship","intern","event"],a:"At Numble I built a full-stack event management app: a .NET 8 API, a Vue 3 front end, sign-in with roles through Azure AD B2C, notifications through Azure Service Bus, and CI/CD in Azure DevOps."},
+    {k:["quote","microtron","erp","sales"],a:"QUOTE+ is an internal tool for Microtron's sales team. It turns plain ERP quotes into branded proposals, with templates, approval steps and single sign-on. Built with C#, .NET and React."},
+    {k:["pokemon","pokémon","game"],a:"A personal web game for catching, comparing and battling Pokémon, built with Node.js, Express and MongoDB and tested with Jest. You can try it at tyj.onrender.com."},
+    {k:["stack","tech","language","skill","tools",".net","c#","vue","react","azure","typescript"],a:"Mostly C# and .NET with SQL Server, Vue 3 or React with TypeScript, and Azure. I also use Node.js, MongoDB, Docker and Git."},
+    {k:["open","available","hire","hiring","job","freelance","work with","role"],a:"Yes, I'm open to full-time roles and freelance projects. The easiest way to start is to book a quick intro call above."},
+    {k:["architecture","study","studies","education","degree","university","school"],a:"I studied architecture at Edukempen CVO (2020–2022), then computer science at Artesis Plantijn University in Antwerp (2022–2025)."},
+    {k:["ai","datacamp","llm"],a:"I recently earned DataCamp's Associate AI Engineer for Developers certificate, working with the OpenAI API, embeddings, LangChain, Pinecone, Hugging Face and MCP. I like adding small, useful AI features to everyday tools."},
+    {k:["call","meet","talk","contact","email","reach","book"],a:"You can book a 15 or 30 minute call in the section above, or email yazandukhan@hotmail.com."},
+    {k:["where","location","based","remote","country","belgium","antwerp"],a:"I'm based in Antwerp, Belgium, and work remotely with people and teams anywhere."},
+    {k:["stad","antwerpen","support","helpdesk"],a:"I worked as an IT support student at Stad Antwerpen in the summer of 2024, helping municipal staff with hardware and software and setting up new devices."}
+  ];
+  var out=document.getElementById("answer"),input=document.getElementById("ask-input");
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,typing=0;
+
+  /* rotating phrase */
+  var rot=document.getElementById("rot"),phrases=["explore more","find answers faster","decide with confidence","spend less time on busywork","explore more"],pi=0;
+  if(!reduce)setInterval(function(){rot.classList.add("out");setTimeout(function(){pi=(pi+1)%(phrases.length-1);rot.textContent=phrases[pi];rot.classList.remove("out");},350);},2800);
+
+  /* dot field: a quiet grid that wakes up around the pointer and breathes on its own */
+  var cv=document.getElementById("field"),cx=cv.getContext("2d"),W=0,H=0,dpr=1,px=-999,py=-999,run=true,cs=getComputedStyle(document.documentElement);
+  var C_DOT=cs.getPropertyValue("--muted").trim()||"#6B7078",C_ACC=cs.getPropertyValue("--accent").trim()||"#2F5D50",GAP=26;
+  var hero=cv.parentNode,Z={x0:0,x1:0,y0:0,y1:0};
+  function zone(){var c=cv.getBoundingClientRect(),h=hero.getBoundingClientRect(),pad=18;Z.x0=h.left-c.left-pad;Z.x1=h.right-c.left+pad;Z.y0=h.top-c.top+20;Z.y1=h.bottom-c.top+pad;}
+  function inZ(x,y){return x>Z.x0&&x<Z.x1&&y>Z.y0&&y<Z.y1;}
+  function size(){var r=cv.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);zone();}
+  function draw(t){
+    cx.clearRect(0,0,W,H);
+    var near=[],pIn=inZ(px,py);
+    for(var y=GAP/2;y<H;y+=GAP){for(var x=GAP/2;x<W;x+=GAP){
+      var wave=Math.pow(Math.sin(x*.012+y*.018-t*.0011)*.5+.5,6);
+      var z=inZ(x,y),d=Math.hypot(x-px,y-py),pull=(pIn||z)?0:Math.max(0,1-d/150);
+      var r=0.9+wave*1.1+pull*2.2;
+      cx.globalAlpha=(0.16+wave*0.28+pull*0.6)*(z?0.35:1);
+      cx.fillStyle=pull>0.05?C_ACC:C_DOT;
+      cx.beginPath();cx.arc(x,y,r,0,6.2832);cx.fill();
+      if(!pIn&&!z&&d<95)near.push([x,y,d]);
+    }}
+    cx.strokeStyle=C_ACC;cx.lineWidth=1;
+    near.forEach(function(p){cx.globalAlpha=(1-p[2]/95)*0.35;cx.beginPath();cx.moveTo(px,py);cx.lineTo(p[0],p[1]);cx.stroke();});
+    cx.globalAlpha=1;
+  }
+  function loop(t){if(run)draw(t);requestAnimationFrame(loop);}
+  size();draw(0);
+  window.addEventListener("resize",function(){size();draw(performance.now());});
+  if(!reduce){
+    requestAnimationFrame(loop);
+    window.addEventListener("pointermove",function(e){var r=cv.getBoundingClientRect();px=e.clientX-r.left;py=e.clientY-r.top;},{passive:true});
+    document.addEventListener("pointerleave",function(){px=py=-999;});
+    if("IntersectionObserver" in window)new IntersectionObserver(function(es){run=es[0].isIntersecting;}).observe(cv);
+  }
+  function norm(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");}
+  function find(q){var n=norm(q),best=null,score=0;KB.forEach(function(e){var s=0;e.k.forEach(function(k){if(n.indexOf(norm(k))>-1)s+=k.length;});if(s>score){score=s;best=e;}});return best;}
+  function ask(q){
+    q=q.trim();if(!q)return;
+    var e=find(q);
+    out.textContent="";
+    var qs=document.createElement("span");qs.className="q";qs.textContent=q;out.appendChild(qs);
+    var txt=e?e.a:"I don't have an answer for that here. Book a quick call above and ask me directly.";
+    var node=document.createTextNode("");out.appendChild(node);
+    if(reduce){node.textContent=txt;return;}
+    var caret=document.createElement("span");caret.className="caret";out.appendChild(caret);
+    var i=0,my=++typing;(function step(){if(my!==typing)return;i=Math.min(txt.length,i+3);node.textContent=txt.slice(0,i);if(i<txt.length)setTimeout(step,16);else setTimeout(function(){caret.remove();},900);})();
+  }
+  document.getElementById("ask-form").addEventListener("submit",function(ev){ev.preventDefault();ask(input.value);input.value="";});
+  document.getElementById("chips").addEventListener("click",function(ev){var b=ev.target.closest(".chip");if(b)ask(b.textContent);});
+
+  var dlg=document.getElementById("resume");
+  document.querySelectorAll("[data-open-resume]").forEach(function(b){b.addEventListener("click",function(){dlg.showModal();});});
+  document.getElementById("resume-close").addEventListener("click",function(){dlg.close();});
+  dlg.addEventListener("click",function(ev){if(ev.target===dlg)dlg.close();});
+
+  var email=document.getElementById("email"),st=document.getElementById("copy-status");
+  document.getElementById("copy").addEventListener("click",function(){
+    function fallback(){var r=document.createRange();r.selectNodeContents(email);var s=getSelection();s.removeAllRanges();s.addRange(r);st.textContent="Selected";}
+    try{navigator.clipboard.writeText(email.textContent).then(function(){st.textContent="Copied";},fallback);}catch(e){fallback();}
+  });
+})();
+</script>
+
+</body>
+</html>
