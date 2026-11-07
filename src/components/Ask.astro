@@ -1,7 +1,7 @@
 ---
 import { site } from "../data/site";
 
-const aiOn = site.askApi !== "";
+const aiOn = Boolean(site.askApi);
 ---
 
 <section id="ask" aria-labelledby="ask-h" class="ask" data-ask-api={site.askApi}>

@@ -20,7 +20,7 @@ export const site = {
    * URL of the deployed ask-api Worker, e.g. "https://portfolio-ask-api.<your-subdomain>.workers.dev/ask".
    * Leave empty to use only the built-in keyword answers in src/data/answers.ts.
    */
-  askApi: "",
+  askApi: "https://portfolio-ask-api.yazandukhan.workers.dev/ask",
 } as const;
 
 /** Prefix a site path with the configured base, e.g. url("/work/numble/"). */
