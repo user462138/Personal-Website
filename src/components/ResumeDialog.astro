@@ -1,0 +1,31 @@
+---
+import { url } from "../data/site";
+---
+
+<dialog id="resume" aria-labelledby="resume-title">
+  <div class="d-head">
+    <b id="resume-title">Resume</b>
+    <div class="d-actions">
+      <a href={url("/resume/Yazan_Dukhan_Resume.pdf")} target="_blank" rel="noopener">Open PDF</a>
+      <button type="button" id="resume-close" aria-label="Close resume">Close</button>
+    </div>
+  </div>
+  <div class="d-body">
+    <img
+      src={url("/resume/page-1.png")}
+      width="1360"
+      height="1760"
+      alt="Resume of Yazan Dukhan: education in computer science and architecture, internship at Numble, IT support at Stad Antwerpen, QUOTE+ and Pokémon app projects, and skills."
+      loading="lazy"
+    />
+  </div>
+</dialog>
+
+<script>
+  const dlg = document.getElementById("resume") as HTMLDialogElement | null;
+  if (dlg) {
+    document.querySelectorAll("[data-open-resume]").forEach((b) => b.addEventListener("click", () => dlg.showModal()));
+    document.getElementById("resume-close")?.addEventListener("click", () => dlg.close());
+    dlg.addEventListener("click", (ev) => { if (ev.target === dlg) dlg.close(); });
+  }
+</script>
