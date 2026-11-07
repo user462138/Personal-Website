@@ -1,0 +1,124 @@
+---
+import { site } from "../data/site";
+
+const aiOn = site.askApi !== "";
+---
+
+<section id="ask" aria-labelledby="ask-h" class="ask" data-ask-api={site.askApi}>
+  <h2 id="ask-h">Questions</h2>
+  <div class="chips" id="chips" role="group" aria-label="Common questions">
+    <button type="button" class="chip">What stack do you use?</button>
+    <button type="button" class="chip">Are you open to work?</button>
+    <button type="button" class="chip">What did you do at Numble?</button>
+  </div>
+  <form id="ask-form">
+    <label for="ask-input" style="position:absolute;left:-9999px">Your question</label>
+    <input
+      id="ask-input"
+      autocomplete="off"
+      maxlength="200"
+      placeholder={aiOn ? "Ask anything about my work" : "Ask something about my work"}
+    />
+    <button type="submit">Ask</button>
+  </form>
+  <p class="answer" id="answer" aria-live="polite"></p>
+  {aiOn && <p class="ai-note mono">Answers are written by AI from my resume and can be wrong.</p>}
+</section>
+
+<script>
+  import { findAnswer } from "../data/answers";
+
+  interface Turn {
+    role: "user" | "assistant";
+    content: string;
+  }
+
+  const section = document.getElementById("ask")!;
+  const out = document.getElementById("answer")!;
+  const input = document.getElementById("ask-input") as HTMLInputElement;
+  const api = section.dataset.askApi ?? "";
+  const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  let history: Turn[] = [];
+  let current = 0; // id of the newest question; older answers stop updating
+
+  /** Built-in keyword answer, typed out letter by letter. */
+  function typeLocal(q: string, node: Text, caret: HTMLElement, my: number) {
+    const txt = findAnswer(q);
+    if (reduce) {
+      node.textContent = txt;
+      caret.remove();
+      return;
+    }
+    let i = 0;
+    const step = () => {
+      if (my !== current) return;
+      i = Math.min(txt.length, i + 3);
+      node.textContent = txt.slice(0, i);
+      if (i < txt.length) setTimeout(step, 16);
+      else setTimeout(() => caret.remove(), 900);
+    };
+    step();
+  }
+
+  /** AI answer streamed from the ask-api Worker; falls back to the keyword answer on any failure. */
+  async function askAI(q: string, node: Text, caret: HTMLElement, my: number) {
+    const ctl = new AbortController();
+    let got = "";
+    const timer = setTimeout(() => { if (!got) ctl.abort(); }, 20000);
+    try {
+      const res = await fetch(api, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q, history }),
+        signal: ctl.signal,
+      });
+      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (my !== current) {
+          await reader.cancel();
+          return;
+        }
+        if (done) break;
+        got += dec.decode(value, { stream: true });
+        node.textContent = got;
+      }
+      if (!got.trim()) throw new Error("empty answer");
+      history = [...history, { role: "user" as const, content: q }, { role: "assistant" as const, content: got }].slice(-6);
+      setTimeout(() => caret.remove(), 600);
+    } catch {
+      if (my === current && !got) typeLocal(q, node, caret, my);
+      else caret.remove();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function ask(raw: string) {
+    const q = raw.trim();
+    if (!q) return;
+    out.textContent = "";
+    const qs = document.createElement("span");
+    qs.className = "q";
+    qs.textContent = q;
+    const node = document.createTextNode("");
+    const caret = document.createElement("span");
+    caret.className = "caret";
+    out.append(qs, node, caret);
+    const my = ++current;
+    if (api) void askAI(q, node, caret, my);
+    else typeLocal(q, node, caret, my);
+  }
+
+  document.getElementById("ask-form")?.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    ask(input.value);
+    input.value = "";
+  });
+  document.getElementById("chips")?.addEventListener("click", (ev) => {
+    const chip = (ev.target as HTMLElement).closest(".chip");
+    if (chip) ask(chip.textContent ?? "");
+  });
+</script>

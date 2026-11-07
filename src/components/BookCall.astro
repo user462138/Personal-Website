@@ -1,0 +1,49 @@
+---
+import { site } from "../data/site";
+---
+
+<section id="call" aria-labelledby="call-h">
+  <h2 id="call-h">Book a call</h2>
+  <div class="book">
+    <div>
+      <h3>Let's talk</h3>
+      <p class="muted" style="margin-top:6px">Pick a time that suits you. No email back and forth, and no preparation needed.</p>
+    </div>
+    <div class="options">
+      {
+        site.calls.map((c) => (
+          <a class="opt" href={c.href} target="_blank" rel="noopener">
+            <b>{c.title}</b>
+            <span>{c.text}</span>
+            <i>{c.length} · video call →</i>
+          </a>
+        ))
+      }
+    </div>
+    <div class="steps"><span>1. Choose a time</span><span>2. Add your name</span><span>3. Get a calendar invite</span></div>
+    <div class="alt">
+      Prefer writing? <code id="email">{site.email}</code><button type="button" class="copy" id="copy">Copy</button><span
+        id="copy-status"
+        aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<script>
+  const email = document.getElementById("email");
+  const status = document.getElementById("copy-status");
+  document.getElementById("copy")?.addEventListener("click", async () => {
+    if (!email || !status) return;
+    try {
+      await navigator.clipboard.writeText(email.textContent ?? "");
+      status.textContent = "Copied";
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(email);
+      const sel = getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      status.textContent = "Selected";
+    }
+  });
+</script>

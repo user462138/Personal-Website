@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 # Sites allowed to call this API, comma separated.
-ALLOWED_ORIGINS = "https://yazandukhan.com,https://www.yazandukhan.com,https://user462138.github.io,http://localhost:8000"
+ALLOWED_ORIGINS = "https://yazandukhan.com,https://www.yazandukhan.com,https://user462138.github.io,http://localhost:4321"
 
 # Each visitor IP gets at most 10 questions per minute.
 [[ratelimits]]

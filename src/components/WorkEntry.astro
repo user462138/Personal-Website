@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { url } from "../data/site";
+
+interface Props {
+  entry: CollectionEntry<"work">;
+}
+
+const { id, data } = Astro.props.entry;
+const href = url(`/work/${id}/`);
+---
+
+<article class="entry">
+  <span class="mono">{data.start.getFullYear()}</span>
+  <div>
+    <h3><a href={href}>{data.title}</a></h3>
+    <span class="where">{data.context}</span>
+    <p>{data.summary}</p>
+    {data.stack.length > 0 && <div class="stack">{data.stack.join(" · ")}</div>}
+    <p class="more">
+      <a href={href}>Read more →</a>
+      {data.links.live && <>&nbsp;·&nbsp;<a href={data.links.live} target="_blank" rel="noopener">Try it ↗</a></>}
+      {data.links.code && <>&nbsp;·&nbsp;<a href={data.links.code} target="_blank" rel="noopener">Code ↗</a></>}
+    </p>
+  </div>
+</article>

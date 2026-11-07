@@ -1,0 +1,55 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { site, url } from "../../data/site";
+
+export const getStaticPaths = (async () => {
+  const work = (await getCollection("work")).sort((a, b) => b.data.start.valueOf() - a.data.start.valueOf());
+  return work.map((entry, i) => ({
+    params: { id: entry.id },
+    props: { entry, newer: work[i - 1], older: work[i + 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry, newer, older } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const month = (d: Date) => d.toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
+const dates = !data.end
+  ? `Since ${month(data.start)}`
+  : month(data.start) === month(data.end)
+    ? month(data.start)
+    : `${month(data.start)} – ${month(data.end)}`;
+---
+
+<Base title={`${data.title} · ${site.name}`} description={data.summary}>
+  <a class="back" href={url("/#work")}>← All work</a>
+
+  <article>
+    <header class="case">
+      <h1>{data.title}</h1>
+      <div class="meta"><span>{data.context}</span><span class="mono">{dates}</span></div>
+      <p class="lead">{data.summary}</p>
+      {data.stack.length > 0 && <div class="stack">{data.stack.join(" · ")}</div>}
+      {
+        (data.links.live || data.links.code) && (
+          <div class="actions">
+            {data.links.live && <a href={data.links.live} target="_blank" rel="noopener">Try it ↗</a>}
+            {data.links.code && <a href={data.links.code} target="_blank" rel="noopener">Code ↗</a>}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <nav class="pager" aria-label="More work">
+    {newer && <a href={url(`/work/${newer.id}/`)}><span>← Newer</span><b>{newer.data.title}</b></a>}
+    {older && <a class="next" href={url(`/work/${older.id}/`)}><span>Older →</span><b>{older.data.title}</b></a>}
+  </nav>
+</Base>

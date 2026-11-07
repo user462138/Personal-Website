@@ -1,0 +1,28 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import WorkEntry from "../components/WorkEntry.astro";
+import Certifications from "../components/Certifications.astro";
+import BookCall from "../components/BookCall.astro";
+import Ask from "../components/Ask.astro";
+import ResumeDialog from "../components/ResumeDialog.astro";
+
+const work = (await getCollection("work")).sort((a, b) => b.data.start.valueOf() - a.data.start.valueOf());
+---
+
+<Base>
+  <Hero />
+
+  <section id="work" aria-labelledby="work-h">
+    <h2 id="work-h">Work</h2>
+    <div class="list">
+      {work.map((entry) => <WorkEntry entry={entry} />)}
+    </div>
+  </section>
+
+  <Certifications />
+  <BookCall />
+  <Ask />
+  <ResumeDialog />
+</Base>
