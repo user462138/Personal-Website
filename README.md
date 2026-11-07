@@ -28,7 +28,7 @@ npm install
 npm run dev
 ```
 
-Then open http://localhost:4321/Personal-Website/. `npm run build` type-checks and builds into `dist/`.
+Then open http://localhost:4321/. `npm run build` type-checks and builds into `dist/`.
 
 ## Add a project
 
@@ -60,7 +60,21 @@ The build fails with a clear message if a required field is missing.
 Every push to `main` builds the site and publishes it. In the repository settings, set
 **Settings → Pages → Source** to **GitHub Actions** once. Pull requests get a build check but aren't published.
 
-To use yazandukhan.com, follow the comment in `astro.config.mjs`.
+The site lives at https://yazandukhan.com. The domain is registered at Squarespace and its DNS points at GitHub Pages:
+
+| Type  | Host | Value |
+|-------|------|-------|
+| A     | @    | 185.199.108.153 |
+| A     | @    | 185.199.109.153 |
+| A     | @    | 185.199.110.153 |
+| A     | @    | 185.199.111.153 |
+| AAAA  | @    | 2606:50c0:8000::153 |
+| AAAA  | @    | 2606:50c0:8001::153 |
+| AAAA  | @    | 2606:50c0:8002::153 |
+| AAAA  | @    | 2606:50c0:8003::153 |
+| CNAME | www  | user462138.github.io |
+
+The custom domain is set under **Settings → Pages → Custom domain**, with **Enforce HTTPS** on.
 
 ## AI Q&A (optional)
 
