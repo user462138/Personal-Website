@@ -32,6 +32,19 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
     />
+    {
+      // Cloudflare Web Analytics: page views, referrers, countries and devices.
+      // No cookies and no IP addresses stored, so no consent banner is needed.
+      // Only in production builds, so local development doesn't count as visits.
+      import.meta.env.PROD && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "055a50f9130c44e99a91eed311eee2cd"}'
+        ></script>
+      )
+    }
   </head>
   <body>
     <main class="page">
