@@ -24,7 +24,11 @@ import { url } from "../data/site";
 <script>
   const dlg = document.getElementById("resume") as HTMLDialogElement | null;
   if (dlg) {
-    document.querySelectorAll("[data-open-resume]").forEach((b) => b.addEventListener("click", () => dlg.showModal()));
+    document.querySelectorAll("[data-open-resume]").forEach((b) => b.addEventListener("click", () => {
+      // Start loading the image now; some mobile browsers never load lazy images inside a dialog.
+      dlg.querySelectorAll("img").forEach((img) => { img.loading = "eager"; });
+      dlg.showModal();
+    }));
     document.getElementById("resume-close")?.addEventListener("click", () => dlg.close());
     dlg.addEventListener("click", (ev) => { if (ev.target === dlg) dlg.close(); });
   }
