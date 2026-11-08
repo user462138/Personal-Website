@@ -7,6 +7,7 @@ import Education from "../components/Education.astro";
 import Certifications from "../components/Certifications.astro";
 import BookCall from "../components/BookCall.astro";
 import ResumeDialog from "../components/ResumeDialog.astro";
+import BookDialog from "../components/BookDialog.astro";
 
 const work = (await getCollection("work")).sort((a, b) => b.data.start.valueOf() - a.data.start.valueOf());
 ---
@@ -25,4 +26,5 @@ const work = (await getCollection("work")).sort((a, b) => b.data.start.valueOf()
   <Certifications />
   <BookCall />
   <ResumeDialog />
+  <BookDialog />
 </Base>

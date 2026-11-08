@@ -4,7 +4,7 @@ img{max-width:100%}
 
 /* Layout: one quiet column, like a well-kept notebook page. Dates sit in a narrow left margin. Light only, by choice. */
 :root{
-  --bg:#FAFAF8; --surface:#FFFFFF; --ink:#1E2023; --muted:#6B7078; --line:#E6E6E1; --accent:#2F5D50; --accent-soft:#EAF1EE;
+  --bg:#FAFAF8; --surface:#FFFFFF; --ink:#1E2023; --muted:#6B7078; --line:#E6E6E1; --accent:#2F5D50; --accent-soft:#EAF1EE; --call:#1E2023; --call-hover:#000000;
   --f-body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light;
@@ -84,9 +84,11 @@ h2{font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercas
 .btn svg{width:17px;height:17px;flex:none}
 .btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent);box-shadow:0 6px 18px rgba(47,93,80,.25)}
 .btn-primary:hover{background:#24493F;border-color:#24493F;transform:translateY(-1px);box-shadow:0 10px 24px rgba(47,93,80,.3)}
+.btn-call{background:var(--call);color:#fff;border:1px solid var(--call);box-shadow:0 6px 18px rgba(30,32,35,.22)}
+.btn-call:hover{background:var(--call-hover);border-color:var(--call-hover);transform:translateY(-1px);box-shadow:0 10px 24px rgba(30,32,35,.28)}
 .btn-secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
-.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:999px}
 .btn{white-space:nowrap}
 @media (max-width:420px){.cta .btn{flex:1 1 0;padding:0 14px}}
 @media (max-width:360px){.cta{flex-direction:column}.cta .btn{flex:none;width:100%}}
@@ -185,3 +187,8 @@ footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);display
 .cert-dialog{width:min(1000px,calc(100vw - 32px))}
 @media (max-width:560px){.d-head{padding:12px 14px}.d-body{padding:12px}}
 .entry h3 a{color:inherit;text-decoration:none}
+
+/* Booking pop-up: the same card as the section, without its own frame */
+.book-dialog{width:min(640px,calc(100vw - 32px))}
+.book-dialog .book{border:0;border-radius:0;overflow:auto;min-height:0}
+@media (max-width:560px){.book-dialog .book{padding:16px}}
