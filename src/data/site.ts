@@ -10,6 +10,22 @@ export const site = {
     { title: "Quick intro", text: "Say hello, ask about my work or a role.", length: "15 min", slug: "15min" },
     { title: "Talk about a project", text: "Walk me through what you'd like to build.", length: "30 min", slug: "30min" },
   ],
+  education: [
+    {
+      degree: "Bachelor in Computer Science",
+      school: "Artesis Plantijn University",
+      place: "Antwerp",
+      years: "2022 – 2025",
+      text: "Data structures and algorithms, object-oriented programming and design, computer organization, combinatorics, and statistics.",
+    },
+    {
+      degree: "Associate degree in Architecture",
+      school: "Edukempen CVO",
+      place: "Antwerp",
+      years: "2020 – 2022",
+      text: "Architectural design studios, digital design and fabrication with Revit, urban design and planning, and drawing with CAD.",
+    },
+  ],
   certifications: [
     {
       title: "Associate AI Engineer for Developers",
