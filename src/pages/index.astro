@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
 import WorkEntry from "../components/WorkEntry.astro";
+import Education from "../components/Education.astro";
 import Certifications from "../components/Certifications.astro";
 import BookCall from "../components/BookCall.astro";
 import ResumeDialog from "../components/ResumeDialog.astro";
@@ -20,6 +21,7 @@ const work = (await getCollection("work")).sort((a, b) => b.data.start.valueOf()
     </div>
   </section>
 
+  <Education />
   <Certifications />
   <BookCall />
   <ResumeDialog />

@@ -1,0 +1,21 @@
+---
+import { site } from "../data/site";
+---
+
+<section id="education" aria-labelledby="education-h">
+  <h2 id="education-h">Education</h2>
+  <div class="list">
+    {
+      site.education.map((e) => (
+        <article class="entry">
+          <span class="mono">{e.years}</span>
+          <div>
+            <h3>{e.degree}</h3>
+            <span class="where">{e.school}, {e.place}</span>
+            <p>{e.text}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
