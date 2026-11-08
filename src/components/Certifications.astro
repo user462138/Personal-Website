@@ -1,19 +1,71 @@
 ---
-import { site } from "../data/site";
+import { site, url } from "../data/site";
 ---
 
 <section id="certs" aria-labelledby="certs-h">
   <h2 id="certs-h">Certifications</h2>
   {
-    site.certifications.map((c) => (
-      <article class="entry">
-        <span class="mono">{c.year}</span>
-        <div>
-          <h3>{c.title}</h3>
-          <span class="where">{c.issuer}</span>
-          <p>{c.text}</p>
-        </div>
-      </article>
-    ))
+    site.certifications.map((c, i) => {
+      const dialogId = `cert-${i}`;
+      const hasImage = Boolean(c.image);
+      return (
+        <article class="entry">
+          <span class="mono">{c.year}</span>
+          <div>
+            <h3>
+              {hasImage ? (
+                <button type="button" class="cert-title" data-open-dialog={dialogId}>{c.title}</button>
+              ) : (
+                <a href={c.verifyUrl} target="_blank" rel="noopener">{c.title}</a>
+              )}
+            </h3>
+            <span class="where">{c.issuer}</span>
+            <p>{c.text}</p>
+            <p class="more">
+              {hasImage && (
+                <>
+                  <button type="button" class="linklike" data-open-dialog={dialogId}>View certificate</button>
+                  &nbsp;·&nbsp;
+                </>
+              )}
+              <a href={c.verifyUrl} target="_blank" rel="noopener">Verify on {c.issuer} ↗</a>
+            </p>
+          </div>
+
+          {hasImage && (
+            <dialog id={dialogId} class="cert-dialog" aria-labelledby={`${dialogId}-title`}>
+              <div class="d-head">
+                <b id={`${dialogId}-title`}>{c.title}</b>
+                <div class="d-actions">
+                  <a href={c.verifyUrl} target="_blank" rel="noopener">Verify on {c.issuer} ↗</a>
+                  <button type="button" data-close-dialog aria-label="Close certificate">Close</button>
+                </div>
+              </div>
+              <div class="d-body">
+                <img
+                  src={url(c.image)}
+                  width={c.imageWidth || undefined}
+                  height={c.imageHeight || undefined}
+                  alt={`${c.issuer} statement of accomplishment: ${c.title}, awarded to ${site.name}.`}
+                  loading="lazy"
+                />
+              </div>
+            </dialog>
+          )}
+        </article>
+      );
+    })
   }
 </section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-open-dialog]").forEach((btn) => {
+    const dlg = document.getElementById(btn.dataset.openDialog ?? "") as HTMLDialogElement | null;
+    if (!dlg) return;
+    btn.addEventListener("click", () => dlg.showModal());
+  });
+  document.querySelectorAll<HTMLDialogElement>("dialog.cert-dialog").forEach((dlg) => {
+    dlg.querySelector("[data-close-dialog]")?.addEventListener("click", () => dlg.close());
+    dlg.addEventListener("click", (ev) => { if (ev.target === dlg) dlg.close(); });
+  });
+</script>
