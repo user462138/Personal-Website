@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT } from "./profile.js";
 
+const MODEL = "claude-haiku-5-5";
 const MAX_QUESTION = 300;
 const MAX_HISTORY = 6; // earlier messages kept for follow-up questions
 
@@ -59,7 +60,7 @@ export default {
     // Claude Haiku 5.5 at low effort: answering from a one-page profile doesn't need a bigger model.
     // Low effort lets it skip thinking on simple questions; max_tokens caps the cost of any one answer.
     const stream = client.messages.stream({
-      model: "claude-haiku-5-5",
+      model: MODEL,
       max_tokens: 1024,
       output_config: { effort: "low" },
       // The profile is identical on every request, so cache it: follow-up questions within
@@ -78,10 +79,11 @@ export default {
               controller.enqueue(encoder.encode(event.delta.text));
             }
           }
+          // Log the model and token usage per question (visible with `npx wrangler tail`).
+          // This runs before close(): Cloudflare may stop the Worker once the response is finished.
+          const { model, usage } = await stream.finalMessage();
+          console.log(JSON.stringify({ model, usage }));
           controller.close();
-          // Token usage per question, visible with `npx wrangler tail`.
-          const { usage } = await stream.finalMessage();
-          console.log(JSON.stringify({ usage }));
         } catch (err) {
           if (err instanceof Anthropic.RateLimitError) console.error("Anthropic rate limit", err.status);
           else if (err instanceof Anthropic.APIConnectionError) console.error("Anthropic connection error", err.message);
@@ -97,7 +99,7 @@ export default {
     });
 
     return new Response(readable, {
-      headers: { ...cors, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      headers: { ...cors, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", "X-Answer-Model": MODEL },
     });
   },
 };
