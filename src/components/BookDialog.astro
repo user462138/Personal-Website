@@ -1,0 +1,28 @@
+---
+import BookingCard from "./BookingCard.astro";
+---
+
+<dialog id="book-dialog" class="book-dialog" aria-labelledby="book-dialog-title">
+  <div class="d-head">
+    <b id="book-dialog-title">Book a call</b>
+    <div class="d-actions">
+      <button type="button" data-close-book aria-label="Close">Close</button>
+    </div>
+  </div>
+  <BookingCard />
+</dialog>
+
+<script>
+  const dlg = document.getElementById("book-dialog") as HTMLDialogElement | null;
+  if (dlg) {
+    document.querySelectorAll<HTMLElement>("[data-open-book]").forEach((b) =>
+      b.addEventListener("click", (ev) => {
+        // The button is a link to #call, so it still works if this script doesn't run.
+        ev.preventDefault();
+        dlg.showModal();
+      }),
+    );
+    dlg.querySelector("[data-close-book]")?.addEventListener("click", () => dlg.close());
+    dlg.addEventListener("click", (ev) => { if (ev.target === dlg) dlg.close(); });
+  }
+</script>
