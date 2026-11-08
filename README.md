@@ -10,8 +10,8 @@ src/
   content/work/       one Markdown file per job or project (becomes /work/<file-name>/)
   content.config.ts   the fields every work entry must have
   data/site.ts        name, email, links, calls, certifications, AI API URL
-  data/answers.ts     built-in answers for the Questions box
-  components/         page sections (hero, work entry, booking, Q&A, resume dialog)
+  data/answers.ts     built-in answers for the chat (used when the AI is unavailable)
+  components/         page sections (hero, work entry, booking, chat widget, resume dialog)
   layouts/Base.astro  shared <head>, fonts and footer
   pages/              home page, work pages and 404
   styles/global.css   all styles
@@ -76,11 +76,11 @@ The site lives at https://yazandukhan.com. The domain is registered at Squarespa
 
 The custom domain is set under **Settings → Pages → Custom domain**, with **Enforce HTTPS** on.
 
-## AI Q&A (optional)
+## AI chat
 
-The "Questions" box answers with Claude through a small Cloudflare Worker in `ask-api/`.
+The chat button in the corner answers with Claude through a small Cloudflare Worker in `ask-api/`.
 The Worker keeps the Anthropic API key secret; the page itself never sees it.
-Until the Worker is deployed and `askApi` is set in `src/data/site.ts`, the box uses built-in keyword answers,
+Until the Worker is deployed and `askApi` is set in `src/data/site.ts`, the chat uses built-in keyword answers,
 and it falls back to them whenever the API can't be reached.
 
 What Claude knows about me is in `ask-api/src/profile.js`. Update it when the resume changes.
