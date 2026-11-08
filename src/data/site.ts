@@ -15,13 +15,13 @@ export const site = {
       title: "Associate AI Engineer for Developers",
       issuer: "DataCamp",
       year: 2026,
-      text: "Building with the OpenAI API, embeddings, LangChain agents, Pinecone, Hugging Face and MCP.",
+      text: "A 29-hour track on building with the OpenAI API, embeddings, LangChain agents, Pinecone, Hugging Face and MCP.",
       /** Official page where anyone can check the certificate. */
       verifyUrl: "https://www.datacamp.com/completed/statement-of-accomplishment/track/8b9b32d2c14df37c8c5e9529c82814aaebb2ca07",
       /** Certificate image in public/ shown in the pop-up; leave empty to only link to verifyUrl. */
-      image: "",
-      imageWidth: 0,
-      imageHeight: 0,
+      image: "/certificates/datacamp-associate-ai-engineer.png",
+      imageWidth: 2000,
+      imageHeight: 1154,
     },
   ],
   /**
