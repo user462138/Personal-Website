@@ -12,14 +12,14 @@ export const site = {
   ],
   education: [
     {
-      degree: "Bachelor in Computer Science",
+      degree: "B.S. in Computer Science",
       school: "Artesis Plantijn University",
       place: "Antwerp",
       years: "2022 – 2025",
       text: "Data structures and algorithms, object-oriented programming and design, computer organization, combinatorics, and statistics.",
     },
     {
-      degree: "Associate degree in Architecture",
+      degree: "A.S. in Architecture",
       school: "Edukempen CVO",
       place: "Antwerp",
       years: "2020 – 2022",
