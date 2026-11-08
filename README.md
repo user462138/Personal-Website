@@ -101,3 +101,7 @@ npx wrangler deploy
 
 Safeguards: only the origins in `ALLOWED_ORIGINS` (`wrangler.toml`) can call it, each visitor IP gets 10 questions per minute,
 and questions are capped at 300 characters. Set a monthly spend limit in the Anthropic Console as well.
+
+The Worker uses Claude Haiku 5.5 at low effort, with the profile prompt cached between questions.
+A typical question costs about $0.0002 (roughly 5,000 questions per dollar).
+To see the real token usage of each question, run `npx wrangler tail` in `ask-api/` and ask something on the site.
