@@ -56,14 +56,15 @@ export default {
 
     // ANTHROPIC_BASE_URL is only for local testing; leave it unset in production.
     const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL || undefined });
-    const stream = client.beta.messages.stream({
-      model: "claude-opus-5-5",
-      max_tokens: 2048,
+    // Claude Haiku 5.5 at low effort: answering from a one-page profile doesn't need a bigger model.
+    // Low effort lets it skip thinking on simple questions; max_tokens caps the cost of any one answer.
+    const stream = client.messages.stream({
+      model: "claude-haiku-5-5",
+      max_tokens: 1024,
       output_config: { effort: "low" },
-      // If a safety classifier declines, the API retries on Anthropic's recommended fallback model.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      system: SYSTEM_PROMPT,
+      // The profile is identical on every request, so cache it: follow-up questions within
+      // 5 minutes read it at a tenth of the normal input price.
+      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
       messages: [...cleanHistory(body.history), { role: "user", content: question }],
     });
 
@@ -78,6 +79,9 @@ export default {
             }
           }
           controller.close();
+          // Token usage per question, visible with `npx wrangler tail`.
+          const { usage } = await stream.finalMessage();
+          console.log(JSON.stringify({ usage }));
         } catch (err) {
           if (err instanceof Anthropic.RateLimitError) console.error("Anthropic rate limit", err.status);
           else if (err instanceof Anthropic.APIConnectionError) console.error("Anthropic connection error", err.message);
