@@ -62,7 +62,11 @@ import { site, url } from "../data/site";
   document.querySelectorAll<HTMLElement>("[data-open-dialog]").forEach((btn) => {
     const dlg = document.getElementById(btn.dataset.openDialog ?? "") as HTMLDialogElement | null;
     if (!dlg) return;
-    btn.addEventListener("click", () => dlg.showModal());
+    btn.addEventListener("click", () => {
+      // Start loading the image now; some mobile browsers never load lazy images inside a dialog.
+      dlg.querySelectorAll("img").forEach((img) => { img.loading = "eager"; });
+      dlg.showModal();
+    });
   });
   document.querySelectorAll<HTMLDialogElement>("dialog.cert-dialog").forEach((dlg) => {
     dlg.querySelector("[data-close-dialog]")?.addEventListener("click", () => dlg.close());
