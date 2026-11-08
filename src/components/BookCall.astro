@@ -12,7 +12,13 @@ import { site } from "../data/site";
     <div class="options">
       {
         site.calls.map((c) => (
-          <a class="opt" href={c.href} target="_blank" rel="noopener">
+          <a
+            class="opt"
+            href={`https://cal.com/${site.calUser}/${c.slug}`}
+            target="_blank"
+            rel="noopener"
+            data-book={`${site.calUser}/${c.slug}`}
+          >
             <b>{c.title}</b>
             <span>{c.text}</span>
             <i>{c.length} · video call →</i>
@@ -30,6 +36,88 @@ import { site } from "../data/site";
 </section>
 
 <script>
+  /* Booking pop-up: opens Cal.com in a modal on this page instead of a new tab.
+     The links still work on their own (new tab) if the embed script can't load. */
+  type CalApi = ((...args: unknown[]) => void) & { ns: Record<string, (...args: unknown[]) => void>; q?: unknown[]; loaded?: boolean };
+  type CalWindow = Window & { Cal?: CalApi };
+
+  const NS = "book";
+  const CAL_CONFIG = { layout: "month_view", useSlotsViewOnSmallScreen: "true", theme: "light" };
+  let calReady = false;
+  let calFailed = false; // embed.js blocked or offline: fall back to the plain links
+  let pending: HTMLAnchorElement | null = null; // clicked before embed.js finished loading
+
+  /** Cal.com's official loader: defines window.Cal and queues calls until embed.js has loaded. */
+  function loadCal() {
+    if (calReady) return;
+    calReady = true;
+    (function (C: CalWindow, A: string, L: string) {
+      const p = (a: { q: unknown[] }, ar: unknown) => { a.q.push(ar); };
+      const d = C.document;
+      C.Cal = C.Cal || (function (this: unknown, ...ar: unknown[]) {
+        const cal = C.Cal as CalApi & { q: unknown[] };
+        if (!cal.loaded) {
+          cal.ns = {};
+          cal.q = cal.q || [];
+          const script = d.head.appendChild(d.createElement("script"));
+          script.onload = () => { pending = null; };
+          script.onerror = () => {
+            calFailed = true;
+            if (pending) window.open(pending.href, "_blank", "noopener");
+            pending = null;
+          };
+          script.src = A;
+          cal.loaded = true;
+        }
+        if (ar[0] === L) {
+          const api = Object.assign((...args: unknown[]) => { p(api, args); }, { q: [] as unknown[] });
+          const namespace = ar[1];
+          if (typeof namespace === "string") {
+            cal.ns[namespace] = cal.ns[namespace] || api;
+            p(cal.ns[namespace] as unknown as { q: unknown[] }, ar);
+            p(cal, ["initNamespace", namespace]);
+          } else p(cal, ar);
+          return;
+        }
+        p(cal, ar);
+      } as CalApi);
+    })(window as CalWindow, "https://app.cal.com/embed/embed.js", "init");
+
+    const Cal = (window as CalWindow).Cal!;
+    Cal("init", NS, { origin: "https://app.cal.com" });
+    Cal.ns[NS]!("ui", {
+      theme: "light",
+      hideEventTypeDetails: false,
+      layout: "month_view",
+      cssVarsPerTheme: { light: { "cal-brand": "#2F5D50" } },
+    });
+  }
+
+  const links = document.querySelectorAll<HTMLAnchorElement>("a[data-book]");
+
+  // Load the embed only when the booking section comes close, so it doesn't slow the first view.
+  const section = document.getElementById("call");
+  if (section && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { loadCal(); io.disconnect(); }
+    }, { rootMargin: "600px" });
+    io.observe(section);
+  }
+
+  links.forEach((link) => {
+    link.addEventListener("pointerenter", loadCal, { once: true });
+    link.addEventListener("focus", loadCal, { once: true });
+    link.addEventListener("click", (ev) => {
+      // Keep ctrl/cmd/shift/middle-click opening a new tab as usual.
+      if (ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+      if (calFailed) return;
+      ev.preventDefault();
+      loadCal();
+      if (!(window as CalWindow).Cal?.loaded || !customElements.get("cal-modal-box")) pending = link;
+      (window as CalWindow).Cal!.ns[NS]!("modal", { calLink: link.dataset.book, config: CAL_CONFIG });
+    });
+  });
+
   const email = document.getElementById("email");
   const status = document.getElementById("copy-status");
   document.getElementById("copy")?.addEventListener("click", async () => {

@@ -4,9 +4,11 @@ export const site = {
   description: "Yazan Dukhan, software engineer building software and AI that helps people explore more.",
   email: "yazandukhan@hotmail.com",
   github: "https://github.com/user462138",
+  /** Cal.com username; booking pages are cal.com/<calUser>/<slug>. */
+  calUser: "yazandukhan",
   calls: [
-    { title: "Quick intro", text: "Say hello, ask about my work or a role.", length: "15 min", href: "https://cal.com/yazandukhan/15min" },
-    { title: "Talk about a project", text: "Walk me through what you'd like to build.", length: "30 min", href: "https://cal.com/yazandukhan/30min" },
+    { title: "Quick intro", text: "Say hello, ask about my work or a role.", length: "15 min", slug: "15min" },
+    { title: "Talk about a project", text: "Walk me through what you'd like to build.", length: "30 min", slug: "30min" },
   ],
   certifications: [
     {
