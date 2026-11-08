@@ -79,9 +79,18 @@ h2{font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercas
 @media (prefers-reduced-motion:reduce){.kicker i,.caret{animation:none}.rot{transition:none}}
 
 /* Resume dialog */
-.resume-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;font:500 .95rem var(--f-body);color:var(--ink);padding:7px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;align-self:flex-start}
-.resume-btn:hover{border-color:var(--accent);color:var(--accent)}
-.resume-btn svg{width:15px;height:15px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:0 22px;border-radius:999px;font:600 1rem var(--f-body);text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s,box-shadow .15s}
+.btn svg{width:17px;height:17px;flex:none}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent);box-shadow:0 6px 18px rgba(47,93,80,.25)}
+.btn-primary:hover{background:#24493F;border-color:#24493F;transform:translateY(-1px);box-shadow:0 10px 24px rgba(47,93,80,.3)}
+.btn-secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn{white-space:nowrap}
+@media (max-width:420px){.cta .btn{flex:1 1 0;padding:0 14px}}
+@media (max-width:360px){.cta{flex-direction:column}.cta .btn{flex:none;width:100%}}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}.btn-primary:hover{transform:none}}
 dialog{border:0;padding:0;border-radius:14px;width:min(860px,calc(100vw - 32px));max-height:calc(100vh - 48px);max-height:calc(100dvh - 32px);background:var(--surface);color:var(--ink);box-shadow:0 24px 60px rgba(20,24,28,.22);overflow:hidden}
 dialog[open]{display:flex;flex-direction:column;animation:pop .2s ease-out}
 dialog::backdrop{background:rgba(30,32,35,.45);backdrop-filter:blur(3px)}

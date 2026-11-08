@@ -11,14 +11,21 @@ import { site } from "../data/site";
     I design and build software, web applications, business tools and AI-powered features end to end, from the first idea
     to production. My focus is software that is reliable, secure and easy for people to use.
   </p>
+  <div class="cta">
+    <button type="button" class="btn btn-primary" data-open-resume>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M4 1.5h5.5L12.5 4.5v10h-8.5z"></path><path d="M9.5 1.5v3h3M6.5 8h4M6.5 10.5h4"></path>
+      </svg>View resume
+    </button>
+    <a class="btn btn-secondary" href="#call">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="2" y="3" width="12" height="11" rx="1.5"></rect><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"></path>
+      </svg>Book a call
+    </a>
+  </div>
   <nav class="links" aria-label="Sections">
-    <a href="#work">Work</a><a href="#call">Book a call</a><button type="button" class="linklike" data-open-chat>Ask AI</button><a href={site.github} target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="#work">Work</a><button type="button" class="linklike" data-open-chat>Ask AI</button><a href={site.github} target="_blank" rel="noopener">GitHub ↗</a>
   </nav>
-  <button type="button" class="resume-btn" data-open-resume>
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-      <path d="M4 1.5h5.5L12.5 4.5v10h-8.5z"></path><path d="M9.5 1.5v3h3M6.5 8h4M6.5 10.5h4"></path>
-    </svg>View resume
-  </button>
 </header>
 
 <script>
