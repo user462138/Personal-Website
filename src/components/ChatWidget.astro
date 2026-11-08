@@ -1,0 +1,270 @@
+---
+import { site, url } from "../data/site";
+
+const suggestions = ["What's his tech stack?", "Is he open to work?", "What did he build at Numble?"];
+---
+
+<button type="button" class="chat-launcher" id="chat-launcher" aria-expanded="false" aria-controls="chat-panel" data-open-chat>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"></path>
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"></path>
+  </svg>
+  <span>Ask about my work</span>
+</button>
+
+<div
+  class="chat-panel"
+  id="chat-panel"
+  role="dialog"
+  aria-labelledby="chat-title"
+  hidden
+  data-ask-api={site.askApi}
+  data-suggestions={JSON.stringify(suggestions)}
+>
+  <div class="chat-head">
+    <div class="chat-avatar" aria-hidden="true">YD</div>
+    <div class="chat-title">
+      <b id="chat-title">Ask about Yazan</b>
+      <span>AI assistant · answers from his resume</span>
+    </div>
+    <button type="button" class="chat-icon-btn" id="chat-reset" aria-label="Start a new conversation" title="New conversation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path>
+      </svg>
+    </button>
+    <button type="button" class="chat-icon-btn" id="chat-close" aria-label="Close chat" title="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+  <form class="chat-form" id="chat-form">
+    <label for="chat-input" style="position:absolute;left:-9999px">Your question</label>
+    <input id="chat-input" autocomplete="off" maxlength="300" placeholder="Ask a question…" />
+    <button type="submit" class="chat-send" id="chat-send" aria-label="Send" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+    </button>
+  </form>
+  <div class="chat-foot">
+    <span>AI can make mistakes.</span>
+    <a href={url("/#call")} data-close-chat>Prefer talking? Book a call</a>
+  </div>
+</div>
+
+<script>
+  import { findAnswer } from "../data/answers";
+
+  type Role = "user" | "bot";
+  interface Msg {
+    role: Role;
+    text: string;
+    /** True when the answer came from the AI (only those go back to it as history). */
+    ai?: boolean;
+  }
+
+  const STORE = "chat-v1";
+  const WELCOME = "Hi! I'm Yazan's AI assistant. Ask me about his projects, skills, experience, or how to get in touch.";
+
+  const panel = document.getElementById("chat-panel") as HTMLElement;
+  const launcher = document.getElementById("chat-launcher") as HTMLButtonElement;
+  const log = document.getElementById("chat-log") as HTMLElement;
+  const form = document.getElementById("chat-form") as HTMLFormElement;
+  const input = document.getElementById("chat-input") as HTMLInputElement;
+  const send = document.getElementById("chat-send") as HTMLButtonElement;
+  const api = panel.dataset.askApi ?? "";
+  const suggestions: string[] = JSON.parse(panel.dataset.suggestions ?? "[]");
+  const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
+  let messages: Msg[] = load();
+  let busy = false;
+  let lastFocus: HTMLElement | null = null;
+
+  /* ---------- storage: keep the conversation while visitors move between pages ---------- */
+  function load(): Msg[] {
+    try {
+      const raw = sessionStorage.getItem(STORE);
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? (parsed as Msg[]).filter((m) => m && (m.role === "user" || m.role === "bot") && typeof m.text === "string") : [];
+    } catch {
+      return [];
+    }
+  }
+  function save() {
+    try {
+      sessionStorage.setItem(STORE, JSON.stringify(messages.slice(-40)));
+    } catch {
+      /* private mode or storage blocked: the chat still works for this page */
+    }
+  }
+
+  /* ---------- rendering ---------- */
+  function bubble(role: Role, text: string): HTMLElement {
+    const el = document.createElement("div");
+    el.className = `msg ${role}`;
+    el.textContent = text;
+    log.appendChild(el);
+    return el;
+  }
+  function scrollDown() {
+    log.scrollTop = log.scrollHeight;
+  }
+  function renderAll() {
+    log.textContent = "";
+    bubble("bot", WELCOME);
+    for (const m of messages) bubble(m.role, m.text);
+    if (messages.length === 0) {
+      const chips = document.createElement("div");
+      chips.className = "chips";
+      for (const s of suggestions) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip";
+        b.textContent = s;
+        b.addEventListener("click", () => ask(s));
+        chips.appendChild(b);
+      }
+      log.appendChild(chips);
+    }
+    scrollDown();
+  }
+
+  /* ---------- answering ---------- */
+  /** The last few AI exchanges, in the shape the ask-api Worker expects. */
+  function history() {
+    const turns: { role: "user" | "assistant"; content: string }[] = [];
+    for (let i = 0; i < messages.length - 1; i++) {
+      const q = messages[i]!, a = messages[i + 1]!;
+      if (q.role === "user" && a.role === "bot" && a.ai) {
+        turns.push({ role: "user", content: q.text }, { role: "assistant", content: a.text });
+        i++;
+      }
+    }
+    return turns.slice(-6);
+  }
+
+  async function aiAnswer(q: string, el: HTMLElement, caret: HTMLElement): Promise<string | null> {
+    const ctl = new AbortController();
+    let got = "";
+    const timer = setTimeout(() => { if (!got) ctl.abort(); }, 20000);
+    try {
+      const res = await fetch(api, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q, history: history() }),
+        signal: ctl.signal,
+      });
+      if (!res.ok || !res.body) return null;
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        got += dec.decode(value, { stream: true });
+        el.textContent = got;
+        el.appendChild(caret);
+        scrollDown();
+      }
+      return got.trim() ? got : null;
+    } catch {
+      return got.trim() ? got : null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function typeOut(text: string, el: HTMLElement, caret: HTMLElement): Promise<void> {
+    if (reduce) {
+      el.textContent = text;
+      return Promise.resolve();
+    }
+    return new Promise((done) => {
+      let i = 0;
+      const step = () => {
+        i = Math.min(text.length, i + 3);
+        el.textContent = text.slice(0, i);
+        el.appendChild(caret);
+        scrollDown();
+        if (i < text.length) setTimeout(step, 14);
+        else done();
+      };
+      step();
+    });
+  }
+
+  async function ask(raw: string) {
+    const q = raw.trim().slice(0, 300);
+    if (!q || busy) return;
+    busy = true;
+    updateSend();
+    log.querySelector(".chips")?.remove();
+
+    bubble("user", q);
+    messages.push({ role: "user", text: q });
+    save();
+
+    const el = bubble("bot", "");
+    const caret = document.createElement("span");
+    caret.className = "caret";
+    el.appendChild(caret);
+    scrollDown();
+
+    let text: string | null = null;
+    if (api) text = await aiAnswer(q, el, caret);
+    const ai = text !== null;
+    if (text === null) {
+      text = findAnswer(q);
+      await typeOut(text, el, caret);
+    }
+    el.textContent = text;
+    messages.push({ role: "bot", text, ai });
+    save();
+    busy = false;
+    updateSend();
+    scrollDown();
+  }
+
+  /* ---------- open / close ---------- */
+  function open() {
+    if (!panel.hidden) return;
+    lastFocus = document.activeElement as HTMLElement | null;
+    renderAll();
+    panel.hidden = false;
+    launcher.setAttribute("aria-expanded", "true");
+    input.focus({ preventScroll: true });
+  }
+  function close() {
+    if (panel.hidden) return;
+    panel.hidden = true;
+    launcher.setAttribute("aria-expanded", "false");
+    (lastFocus && document.contains(lastFocus) && lastFocus !== document.body ? lastFocus : launcher).focus({ preventScroll: true });
+  }
+  function updateSend() {
+    send.disabled = busy || !input.value.trim();
+  }
+
+  document.querySelectorAll("[data-open-chat]").forEach((b) => b.addEventListener("click", open));
+  document.getElementById("chat-close")?.addEventListener("click", close);
+  document.querySelectorAll("[data-close-chat]").forEach((a) => a.addEventListener("click", close));
+  document.getElementById("chat-reset")?.addEventListener("click", () => {
+    if (busy) return;
+    messages = [];
+    save();
+    renderAll();
+    input.focus();
+  });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !panel.hidden) close(); });
+  input.addEventListener("input", updateSend);
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const q = input.value;
+    input.value = "";
+    updateSend();
+    input.focus({ preventScroll: true });
+    void ask(q);
+  });
+</script>
